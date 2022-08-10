@@ -4,7 +4,6 @@ export const main = Reach.App(() => {
     const Needy = Participant('Needy', {
         DonationNeeded: UInt,
         DonationCause: Bytes(128),
-        WalletID: Address,
     });
 
     
@@ -13,19 +12,16 @@ export const main = Reach.App(() => {
         ApproveDonation: Fun([], Bool),
     });
 
-    /*const Donor = Participant('Donor', {
-        Donation: UInt,
-        NeedyWalletID: Address,
-        Donates: Fun([UInt, Address], Null),
-    });*/
+    const Donors = API('Donors', {
+        Donates: Fun([UInt], Null),
+    });
     init();
 
     Needy.only(() => {
         const DonationNeeded = declassify(interact.DonationNeeded);
         const DonationCause = declassify(interact.DonationCause);
-        const WalletID = declassify(interact.WalletID);
    });
-    Needy.publish(DonationNeeded, DonationCause, WalletID);
+    Needy.publish(DonationNeeded, DonationCause);
     commit();
 
     Verifier.only(() => {
@@ -35,15 +31,18 @@ export const main = Reach.App(() => {
     Verifier.publish(VerifierID, IsApproved);
     commit();
 
-    /*Donor.only(() => {
-        const Donation = declassify(interact.Donation);
-        const NeedyWalletID = declassify(interact.NeedyWalletID);
-    });
-    Donor.publish(Donation, NeedyWalletID);
+    const [ totalDonated ] =
+    parallelReduce([ 0 ])
+        .invariant( balance() == totalDonated )
+        .while(totalDonated < DonationNeeded)
+        .api_(Donors.Donates, (donates) => {
+            check(true);
+
+            return [ donates, (resolve) => {
+                resolve(null);
+                return [totalDonated + donates];
+            }]
+        });
+    transfer(totalDonated).to(Needy);
     commit();
-
-    Donor.only(() => {
-        interact.Donates(Donation, NeedyWalletID);
-    });*/
-
 });
