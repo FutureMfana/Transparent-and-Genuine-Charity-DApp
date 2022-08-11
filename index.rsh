@@ -29,7 +29,6 @@ export const main = Reach.App(() => {
         const IsApproved = declassify(interact.ApproveDonation());
     });
     Verifier.publish(VerifierID, IsApproved);
-    commit();
 
     const [ totalDonated ] =
     parallelReduce([ 0 ])
