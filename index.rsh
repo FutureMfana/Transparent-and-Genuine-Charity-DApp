@@ -6,9 +6,7 @@ export const main = Reach.App(() => {
         DonationCause: Bytes(128),
     });
 
-    
     const Verifier = Participant('Verifier', {
-        VerifierID: Address,
         ApproveDonation: Fun([], Bool),
     });
 
@@ -20,15 +18,14 @@ export const main = Reach.App(() => {
     Needy.only(() => {
         const DonationNeeded = declassify(interact.DonationNeeded);
         const DonationCause = declassify(interact.DonationCause);
-   });
+    });
     Needy.publish(DonationNeeded, DonationCause);
     commit();
 
     Verifier.only(() => {
-        const VerifierID = declassify(interact.VerifierID);
         const IsApproved = declassify(interact.ApproveDonation());
     });
-    Verifier.publish(VerifierID, IsApproved);
+    Verifier.publish(IsApproved);
 
     const [ totalDonated ] =
     parallelReduce([ 0 ])
@@ -36,8 +33,7 @@ export const main = Reach.App(() => {
         .while(totalDonated < DonationNeeded)
         .api_(Donors.Donates, (donates) => {
             check(true);
-
-            return [ donates, (resolve) => {
+            return [ donates, (resolve) => {         //donates has to be multiplied by 6? why?
                 resolve(null);
                 return [totalDonated + donates];
             }]
