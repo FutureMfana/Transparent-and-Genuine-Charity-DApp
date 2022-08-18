@@ -56,5 +56,5 @@ ask.done();
 const afterDonor = await getBalance(accDonor);
 const afterNeedy = await getBalance(accNeedy);
 
-console.log(`National Government went from ${donorBal} to ${afterDonor}.`);
-console.log(`Local Municipality1 went from ${needyBal} to ${afterNeedy}.`);
+console.log(`Donor went from ${donorBal} to ${afterDonor}.`);
+console.log(`Needy went from ${needyBal} to ${afterNeedy}.`);
