@@ -4,6 +4,7 @@ export const main = Reach.App(() => {
     const Needy = Participant('Needy', {
         DonationNeeded: UInt,
         DonationCause: Bytes(128),
+        StartDonations: Fun([],Null),
     });
 
     const Verifier = Participant('Verifier', {
@@ -26,6 +27,7 @@ export const main = Reach.App(() => {
         const IsApproved = declassify(interact.ApproveDonation());
     });
     Verifier.publish(IsApproved);
+    Needy.interact.StartDonations();
 
     const [ totalDonated ] =
     parallelReduce([ 0 ])
@@ -37,7 +39,8 @@ export const main = Reach.App(() => {
                 resolve(null);
                 return [totalDonated + donates];
             }]
-        });
+        });  
     transfer(totalDonated).to(Needy);
     commit();
+    exit();
 });
