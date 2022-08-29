@@ -10,7 +10,7 @@ const port = "";
 const PORT = 5000;
 
 const token = {
-    'X-API-key': 'UcMg75wrnjavhV6zGanrn1cUUsuN3ZpN8qboO8Nv',
+    //API Key goes here
 }
 
 let indexerClient = new algosdk.Indexer(token, baseServer, port);
